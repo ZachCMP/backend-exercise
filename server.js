@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const path = require('path')
 
 const config = require('./config')
 
@@ -11,7 +12,6 @@ const port = config.APP_PORT
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.get('/', (req, res) => res.send('Hello World!'))
 app.get('/init', async (req, res) => {
   try {
     return res.send(await api.init())
@@ -22,6 +22,29 @@ app.get('/init', async (req, res) => {
     })
   }
 })
-app.get('/test', async (req, res) => res.send(await api.test()))
+app.get('/stations', async (req, res) => {
+  const { bbox } = req.query
+  if (bbox) {
+    try {
+      const [ swln, swlat, neln, nelat ] = bbox.split(',').map(e => parseFloat(e.trim()))
+      const stations = await api.getStationsForBbox({
+        lat: {
+          min: swlat,
+          max: nelat
+        },
+        lon: {
+          min: swln,
+          max: neln,
+        }
+      })
+      return res.send(stations || [])
+    } catch(err) {
+      return res.status(500).send(err.message)
+    }
+  }
+  return res.status(400).send('"bbox" is required')
+})
+
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'static/index.html')))
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

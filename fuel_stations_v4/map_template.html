@@ -1,0 +1,43 @@
+<!--
+** Add these leaflet assets
+<head>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+   integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+   crossorigin=""></script>
+</head>
+-->
+
+<div id="mapid" style='width: 600px; height: 500px'></div>
+
+<script>
+  'use strict';
+
+  var yourDataUrl = '/path_to_stations.json';
+  var accessToken = 'pk.eyJ1IjoidGhlcm9udG9vbWV5IiwiYSI6ImNqenZ6bGtydjAwMHkzbXBvbjB3OXIxYTMifQ.P3icvgrMaQgB9PMkg7pB5A';
+
+  var myMap = L.map('mapid').setView([42.8606637,-72.6015389], 12);
+  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + accessToken, {
+    maxZoom: 18,
+    id: 'mapbox.streets-basic'
+  }).addTo(myMap);
+
+  const loadDataForBounds = function() {
+    var bounds = myMap.getBounds();
+    fetch(yourDataUrl + '?bbox=' + bounds.toBBoxString())
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(myJson) {
+      L.geoJSON(myJson).addTo(myMap);
+    });
+  };
+
+  myMap.on('moveend', function(e) {
+    loadDataForBounds()
+  });
+  loadDataForBounds();
+
+</script>
