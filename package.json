@@ -19,10 +19,10 @@
   },
   "homepage": "https://github.com/ZachCMP/backend-exercise#readme",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "csv-parse": "^4.8.5",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "fs-extra": "^8.1.0",
     "knex": "^0.20.9",
     "nodemon": "^2.0.2",
